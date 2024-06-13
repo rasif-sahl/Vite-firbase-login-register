@@ -1,0 +1,45 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  background: linear-gradient(to bottom right, #4A148C, #880E4F);
+  background: -webkit-linear-gradient(to bottom right, #4A148C, #880E4F);
+  min-height: 100vh;
+  position: relative;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+.company-name {
+  font-size: 100px;
+  color: #ffffff;
+  text-align: center;
+  font-weight: bold;
+}
+
+.btn-custom{
+  width: 100%;
+  padding: 3px 0;
+  height: auto;
+}
+
+.redirect-link{
+  padding: 80px 0 0;
+}
+
+.forgot-password{
+  padding: 5px 0 0;
+}
+
+@media screen and (max-width: 774px) {
+  .company-name {
+    font-size: 70px; /* Adjust font size for smaller screens */
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .company-name {
+    font-size: 50px; /* Further adjust font size for even smaller screens */
+  }
+}
