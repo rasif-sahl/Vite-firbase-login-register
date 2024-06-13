@@ -14,19 +14,16 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
     container.id = 'login-container';
     container.classList.add('container');
 
-    // const companyName = document.createElement('h1');
-    // companyName.classList.add('company-name');
-    // companyName.textContent = "onUgo";
-    // container.appendChild(companyName);
+    //Render the company logo component 
     const companyName = createCompanyName();
     container.appendChild(companyName);
 
     const row = document.createElement('div');
     row.classList.add('row');
 
+    // Add dynamic columns for the wrapper
     const col = document.createElement('div');
     col.classList.add(...colSizes.split(' '));
-
 
     const card = document.createElement('div');
     card.classList.add('card');
@@ -34,9 +31,10 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
     const cardContent = document.createElement('div');
     cardContent.classList.add('card-content');
 
+    // Add a dynamic title for the card
     const cardTitle = document.createElement('span');
-    cardTitle.classList.add('card-title', 'center-align', 'flow-text', 'lighten-2', 'thin');
-    cardTitle.textContent = title; // Dynamic title
+    cardTitle.classList.add('card-title', 'center-align', 'flow-text', 'grey-text');
+    cardTitle.textContent = title;
     cardContent.appendChild(cardTitle);
 
     const form = document.createElement('form');

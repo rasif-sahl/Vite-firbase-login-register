@@ -14,12 +14,14 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     container.id = 'register-container';
     container.classList.add('container');
 
+    //Render the company logo component 
     const companyName = createCompanyName();
     container.appendChild(companyName);
 
     const row = document.createElement('div');
     row.classList.add('row');
 
+    // Add dynamic columns for the wrapper
     const col = document.createElement('div');
     col.classList.add(...colSizes.split(' '));
 
@@ -29,8 +31,9 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     const cardContent = document.createElement('div');
     cardContent.classList.add('card-content');
 
+    // Add a dynamic title for the card
     const cardTitle = document.createElement('span');
-    cardTitle.classList.add('card-title', 'center-align', 'flow-text', 'lighten-2', 'thin'); // Add Materialize classes
+    cardTitle.classList.add('card-title', 'center-align', 'flow-text', 'grey-text');
     cardTitle.textContent = title;
     cardContent.appendChild(cardTitle);
 
