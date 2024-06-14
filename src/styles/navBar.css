@@ -1,0 +1,13 @@
+.navBar-custom-wrapper {
+    background: linear-gradient(to bottom right, #4A148C, #880E4F);
+    background: -webkit-linear-gradient(to bottom right, #4A148C, #880E4F);
+}
+
+.logo-custom {
+    font-size: 40px !important;
+    font-weight: bolder;
+}
+
+.nav-custom-logout-btn {
+    font-size: 20px;
+}
