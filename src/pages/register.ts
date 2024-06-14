@@ -1,10 +1,10 @@
-// register.ts
 import { createFormField } from '../components/formField';
 import { createSubmitButton } from '../components/buttonSubmit';
 import { createCompanyName } from '../components/companyName';
-// import { auth, db } from '../firebaseConfig';
-// import { createUserWithEmailAndPassword } from 'firebase/auth';
-// import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 
 interface RegisterPageOptions {
     title: string;
@@ -64,42 +64,55 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     const submitButton = createSubmitButton(); // Create submit button component
     form.appendChild(submitButton);
 
-    // form.addEventListener('submit', async (e) => {
-    //     e.preventDefault();
-    //     const usernameInput = form.querySelector('#register-username') as HTMLInputElement;
-    //     const mobileInput = form.querySelector('#register-mobile') as HTMLInputElement;
-    //     const emailInput = form.querySelector('#register-email') as HTMLInputElement;
-    //     const passwordInput = form.querySelector('#register-password') as HTMLInputElement;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const usernameInput = form.querySelector('#register-username') as HTMLInputElement;
+        const mobileInput = form.querySelector('#register-mobile') as HTMLInputElement;
+        const emailInput = form.querySelector('#register-email') as HTMLInputElement;
+        const passwordInput = form.querySelector('#register-password') as HTMLInputElement;
 
-    //     const username = usernameInput.value;
-    //     const mobile = mobileInput.value;
-    //     const email = emailInput.value;
-    //     const password = passwordInput.value;
+        const username = usernameInput.value;
+        const mobile = mobileInput.value;
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
-    //     // Basic client-side validation
-    //     if (!username || !mobile || !email || !password) {
-    //         alert('Please fill in all fields.');
-    //         return;
-    //     }
+        // Basic client-side validation
+        if (!username || !mobile || !email || !password) {
+            alert('Please fill in all fields.');
+            return;
+        }
 
-    //     try {
-    //         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    //         const user = userCredential.user;
+        try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-    //         // Save additional user info in Firestore
-    //         await setDoc(doc(db, 'users', user.uid), {
-    //             username,
-    //             email,
-    //             mobile,
-    //         });
+            // Save additional user info in Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                username,
+                email,
+                mobile,
+            });
 
-    //         console.log('Registered:', user);
-    //         alert('User registered successfully!');
-    //     } catch (error) {
-    //         console.error('Registration error:', error);
-    //         alert(`Error registering user: ${error.message}`);
-    //     }
-    // });
+            console.log('Registered:', user);
+            // alert('User registered successfully!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'User registered successfully.',
+            }).then(() => {
+                window.location.href = '/login'; 
+            });
+        } catch (error: any) {
+            console.error('Registration error:', error);
+            // alert(`Error registering user: ${error.message}`);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: `Error registering user: ${error}`,
+            });
+        }
+    });
 
     const loginLinkContainer = document.createElement('div');
     loginLinkContainer.classList.add('center-align', 'redirect-link');
