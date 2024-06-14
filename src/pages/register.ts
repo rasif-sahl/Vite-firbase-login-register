@@ -1,8 +1,10 @@
+// register.ts
 import { createFormField } from '../components/formField';
-// import { createUserWithEmailAndPassword } from 'firebase/auth';
-// import { auth } from '../firebaseConfig';
 import { createSubmitButton } from '../components/buttonSubmit';
 import { createCompanyName } from '../components/companyName';
+// import { auth, db } from '../firebaseConfig';
+// import { createUserWithEmailAndPassword } from 'firebase/auth';
+// import { doc, setDoc } from 'firebase/firestore';
 
 interface RegisterPageOptions {
     title: string;
@@ -14,7 +16,7 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     container.id = 'register-container';
     container.classList.add('container');
 
-    //Render the company logo component 
+    // Render the company logo component 
     const companyName = createCompanyName();
     container.appendChild(companyName);
 
@@ -40,24 +42,63 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     const form = document.createElement('form');
     form.id = 'register-form';
 
+    // Create a row for username and mobile number
+    const userMobileRow = document.createElement('div');
+    userMobileRow.classList.add('row');
+
+    const usernameCol = document.createElement('div');
+    usernameCol.classList.add('col', 's6');
+    usernameCol.appendChild(createFormField('register-username', 'Username', 'text'));
+
+    const mobileCol = document.createElement('div');
+    mobileCol.classList.add('col', 's6');
+    mobileCol.appendChild(createFormField('register-mobile', 'Mobile Number', 'tel'));
+
+    userMobileRow.appendChild(usernameCol);
+    userMobileRow.appendChild(mobileCol);
+
+    form.appendChild(userMobileRow);
     form.appendChild(createFormField('register-email', 'Email', 'email'));
     form.appendChild(createFormField('register-password', 'Password', 'password'));
 
     const submitButton = createSubmitButton(); // Create submit button component
     form.appendChild(submitButton);
 
-    // form.addEventListener('submit', (e) => {
+    // form.addEventListener('submit', async (e) => {
     //     e.preventDefault();
-    //     const email = (form.querySelector('#register-email') as HTMLInputElement).value;
-    //     const password = (form.querySelector('#register-password') as HTMLInputElement).value;
+    //     const usernameInput = form.querySelector('#register-username') as HTMLInputElement;
+    //     const mobileInput = form.querySelector('#register-mobile') as HTMLInputElement;
+    //     const emailInput = form.querySelector('#register-email') as HTMLInputElement;
+    //     const passwordInput = form.querySelector('#register-password') as HTMLInputElement;
 
-    //     createUserWithEmailAndPassword(auth, email, password)
-    //         .then((userCredential) => {
-    //             console.log('Registered:', userCredential);
-    //         })
-    //         .catch((error) => {
-    //             console.error('Registration error:', error);
+    //     const username = usernameInput.value;
+    //     const mobile = mobileInput.value;
+    //     const email = emailInput.value;
+    //     const password = passwordInput.value;
+
+    //     // Basic client-side validation
+    //     if (!username || !mobile || !email || !password) {
+    //         alert('Please fill in all fields.');
+    //         return;
+    //     }
+
+    //     try {
+    //         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    //         const user = userCredential.user;
+
+    //         // Save additional user info in Firestore
+    //         await setDoc(doc(db, 'users', user.uid), {
+    //             username,
+    //             email,
+    //             mobile,
     //         });
+
+    //         console.log('Registered:', user);
+    //         alert('User registered successfully!');
+    //     } catch (error) {
+    //         console.error('Registration error:', error);
+    //         alert(`Error registering user: ${error.message}`);
+    //     }
     // });
 
     const loginLinkContainer = document.createElement('div');
@@ -75,9 +116,6 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
 
     // Append the container to the form
     form.appendChild(loginLinkContainer);
-
-
-
 
     cardContent.appendChild(form);
     card.appendChild(cardContent);

@@ -1,6 +1,7 @@
 import { createLoginPage } from './pages/login';
 import { createRegisterPage } from './pages/register';
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const root = document.getElementById('app');
     if (root) {

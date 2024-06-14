@@ -1,18 +1,18 @@
 export function createFormField(id: string, label: string, type: string): HTMLDivElement {
-    const formField = document.createElement('div');
-    formField.classList.add('input-field', 'col', 's12');
+    const div = document.createElement('div');
+    div.classList.add('input-field', 'col', 's12');
 
     const input = document.createElement('input');
-    input.id = id;
     input.type = type;
+    input.id = id;
     input.classList.add('validate');
 
     const labelElement = document.createElement('label');
-    labelElement.htmlFor = id;
+    labelElement.setAttribute('for', id);
     labelElement.textContent = label;
 
-    formField.appendChild(input);
-    formField.appendChild(labelElement);
+    div.appendChild(input);
+    div.appendChild(labelElement);
 
-    return formField;
+    return div;
 }
