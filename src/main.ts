@@ -12,12 +12,8 @@ function initApp() {
         root?.appendChild(createRegisterPage({ title: 'Register', colSizes: 'col s12 m6 offset-m3' }));
     } else if (window.location.pathname === '/dashboard') {
         root?.appendChild(createDashboardPage());
-    // } else if (window.location.pathname === '/settings') {
-    //     root?.appendChild(createSettingsPage());
-    // } else if (window.location.pathname === '/profile') {
-    //     root?.appendChild(createProfilePage());
     } else {
-        window.location.href = '/login'; // Default to login if route not found
+        window.location.href = '/login';
     }
 }
 
