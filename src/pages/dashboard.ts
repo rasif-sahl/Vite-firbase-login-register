@@ -9,13 +9,18 @@ export function createDashboardPage(): HTMLDivElement {
         const navBar = createNavBar();
         container.appendChild(navBar);
 
+        const contentContainer = document.createElement('div');
+        contentContainer.classList.add('container');
+
         const content = document.createElement('div');
         content.classList.add('content');
         content.innerHTML = `
-            <h1>Welcome to the Dashboard</h1>
+            <h2>Welcome to the Dashboard</h2>
             <p>This page is only accessible to authenticated users.</p>
         `;
-        container.appendChild(content);
+
+        contentContainer.appendChild(content);
+        container.appendChild(contentContainer);
     });
 
     return container;
