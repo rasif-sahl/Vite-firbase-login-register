@@ -1,41 +1,13 @@
-// // src/pages/protected.ts
-// export function dashboardPage(): HTMLDivElement {
-//     const container = document.createElement('div');
-//     container.id = 'protected-container';
-//     container.classList.add('container');
-  
-//     const message = document.createElement('h1');
-//     message.textContent = 'Welcome to the Protected Page!';
-//     container.appendChild(message);
-  
-//     return container;
-// }
-  
+import { protectRoute } from '../router';
 
-// protectedPage.ts
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { createCompanyName } from '../components/companyName';
-
-export function createProtectedPage(): HTMLDivElement {
+export function createDashboardPage(): HTMLDivElement {
     const container = document.createElement('div');
-    container.id = 'protected-container';
-    container.classList.add('container');
 
-    const companyName = createCompanyName();
-    container.appendChild(companyName);
-
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const content = document.createElement('div');
-            content.classList.add('content');
-            content.textContent = `Welcome, ${user.email}`;
-            container.appendChild(content);
-        } else {
-            alert('You need to log in to access this page.');
-            window.location.href = '/login';
-        }
+    protectRoute(() => {
+        container.innerHTML = `
+            <h1>Welcome to the Dashboard</h1>
+            <p>This page is only accessible to authenticated users.</p>
+        `;
     });
 
     return container;
