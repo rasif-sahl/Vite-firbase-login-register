@@ -1,15 +1,17 @@
 import { createDashboardPage } from './pages/dashboard';
 
-function initApp() {
-    const root = document.getElementById('app');
-    // root.innerHTML = ''; // Clear existing content
-
-    if (window.location.pathname === '/dashboard') {
-        root?.appendChild(createDashboardPage());
-    } else {
-        window.location.href = '/dashboard'; // Default to dashboard if route not found
+async function initApp() {
+    try {
+        const dashboardPage = await createDashboardPage();
+        if (dashboardPage instanceof Node) {
+            document.body.appendChild(dashboardPage);
+        } else {
+            console.error('The returned value is not a Node.');
+        }
+    } catch (error) {
+        console.error('Error initializing the app:', error);
     }
 }
 
-// Initialize the app on page load
 document.addEventListener('DOMContentLoaded', initApp);
+
