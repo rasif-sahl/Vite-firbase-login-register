@@ -1,5 +1,5 @@
 import { createFormField } from '../components/formField';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../firebase';
 import { createSubmitButton } from '../components/buttonSubmit';
 import { createCompanyName } from '../components/companyName';
@@ -44,6 +44,18 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
     const submitButton = createSubmitButton();
     form.appendChild(submitButton);
 
+    // Create the recaptcha-container dynamically
+    const recaptchaContainer = document.createElement('div');
+    recaptchaContainer.id = 'recaptcha-container';
+    document.body.appendChild(recaptchaContainer); // Ensure it is appended to the body
+
+
+
+
+    
+
+    
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = (form.querySelector('#login-email') as HTMLInputElement).value;
@@ -52,14 +64,63 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             console.log('Logged in:', userCredential);
-            window.location.href = '/dashboard';
+
+            // Ensure recaptcha-container exists in the DOM before initializing RecaptchaVerifier
+            const recaptchaElement = document.getElementById('recaptcha-container');
+            if (!recaptchaElement) {
+                throw new Error('reCAPTCHA container not found');
+            }
+            
+
+            console.log(recaptchaElement)
+
+            const recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaElement, {
+                size: 'invisible',
+                callback: (response: any) => {
+                  console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+                }
+            });
+
+            console.log(recaptchaVerifier)
+            console.log('recapture')
+
+
+            await recaptchaVerifier.render();
+
+            console.log(userCredential?.user)
+
+
+
+            // I think when a user is been registered we need to register the phone number as well.
+            
+            const phoneNumber = userCredential.user.phoneNumber;
+            if (!phoneNumber) {
+                throw new Error('User does not have a phone number registered.');
+            }
+
+            const appVerifier = recaptchaVerifier;
+            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+
+            const { value: smsCode } = await Swal.fire({
+                title: 'Enter SMS Code',
+                input: 'text',
+                inputLabel: 'SMS Code',
+                inputPlaceholder: 'Enter the SMS code you received'
+            });
+
+            if (smsCode) {
+                await confirmationResult.confirm(smsCode);
+                console.log('SMS authentication successful');
+                window.location.href = '/dashboard';
+            } else {
+                throw new Error('No SMS code entered');
+            }
         } catch (error) {
             console.error('Login error:', error);
-            // Show Sweet Alert here for error
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Invalid email or password!'
+                text: (error as Error).message || 'Invalid email or password!'
             });
         }
     });
