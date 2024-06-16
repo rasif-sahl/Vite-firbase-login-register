@@ -61,7 +61,7 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     form.appendChild(createFormField('register-email', 'Email', 'email'));
     form.appendChild(createFormField('register-password', 'Password', 'password'));
 
-    const submitButton = createSubmitButton(); // Create submit button component
+    const submitButton = createSubmitButton('Register'); // Create submit button component
     form.appendChild(submitButton);
 
     // Create the recaptcha-container dynamically
@@ -92,7 +92,7 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
             const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
                 size: 'invisible',
                 callback: (response: any) => {
-                    console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+                    console.log('reCAPTCHA solved, allow signInWithPhoneNumber.', response);
                 }
             });
 
@@ -106,6 +106,11 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
                 input: 'text',
                 inputLabel: 'SMS Code',
                 inputPlaceholder: 'Enter the SMS code you received',
+                customClass: {
+                    popup: 'sms-popup',
+                    input: 'sms-input'
+                },
+                background: 'rgba(0, 0, 0, 0.8)',
                 inputValidator: (value) => {
                     if (!value) {
                         return 'You need to enter the SMS code!';
@@ -134,7 +139,7 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
                     title: 'Success!',
                     text: 'User registered successfully.',
                 }).then(() => {
-                    window.location.href = '/login'; 
+                    window.location.href = '/dashboard'; 
                 });
             } else {
                 throw new Error('No SMS code entered');
