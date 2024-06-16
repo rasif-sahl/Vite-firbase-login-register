@@ -2,7 +2,7 @@ import { createFormField } from '../components/formField';
 import { createSubmitButton } from '../components/buttonSubmit';
 import { createCompanyName } from '../components/companyName';
 import { auth, db } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, linkWithCredential } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
@@ -64,6 +64,11 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
     const submitButton = createSubmitButton(); // Create submit button component
     form.appendChild(submitButton);
 
+    // Create the recaptcha-container dynamically
+    const recaptchaContainer = document.createElement('div');
+    recaptchaContainer.id = 'recaptcha-container';
+    form.appendChild(recaptchaContainer);
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const usernameInput = form.querySelector('#register-username') as HTMLInputElement;
@@ -83,33 +88,63 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
         }
 
         try {
-            // Create user with email and password
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            // Save additional user info in Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                username,
-                email,
-                mobile,
+            // Step 1: Set up reCAPTCHA
+            const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                size: 'invisible',
+                callback: (response: any) => {
+                    console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+                }
             });
 
-            console.log('Registered:', user);
-            // alert('User registered successfully!');
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'User registered successfully.',
-            }).then(() => {
-                window.location.href = '/login'; 
+            await recaptchaVerifier.render();
+
+            // Step 2: Send SMS code for phone number verification
+            const confirmationResult = await signInWithPhoneNumber(auth, mobile, recaptchaVerifier);
+
+            const { value: smsCode } = await Swal.fire({
+                title: 'Enter SMS Code',
+                input: 'text',
+                inputLabel: 'SMS Code',
+                inputPlaceholder: 'Enter the SMS code you received',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to enter the SMS code!';
+                    }
+                }
             });
+
+            if (smsCode) {
+                // Step 3: Verify the SMS code
+                const phoneCredential = PhoneAuthProvider.credential(confirmationResult.verificationId, smsCode);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                await linkWithCredential(user, phoneCredential);
+
+                // Step 4: Save additional user info in Firestore
+                await setDoc(doc(db, 'users', user.uid), {
+                    username,
+                    email,
+                    mobile,
+                });
+
+                console.log('Registered:', user);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'User registered successfully.',
+                }).then(() => {
+                    window.location.href = '/login'; 
+                });
+            } else {
+                throw new Error('No SMS code entered');
+            }
         } catch (error: any) {
             console.error('Registration error:', error);
-            // alert(`Error registering user: ${error.message}`);
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
-                text: `Error registering user: ${error}`,
+                text: `Error registering user: ${error.message}`,
             });
         }
     });
