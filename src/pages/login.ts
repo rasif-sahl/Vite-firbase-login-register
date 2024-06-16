@@ -41,7 +41,7 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
     form.appendChild(createFormField('login-email', 'Email', 'email'));
     form.appendChild(createFormField('login-password', 'Password', 'password'));
 
-    const submitButton = createSubmitButton('login');
+    const submitButton = createSubmitButton('Login');
     form.appendChild(submitButton);
 
     // Create the recaptcha-container dynamically
@@ -51,6 +51,10 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // Disable the submit button
+        submitButton.disabled = true;
+
         const email = (form.querySelector('#login-email') as HTMLInputElement).value;
         const password = (form.querySelector('#login-password') as HTMLInputElement).value;
 
@@ -112,6 +116,8 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
                 title: 'Oops...',
                 text: (error as Error).message || 'Invalid email or password!'
             });
+            // Re-enable the submit button if there's an error
+            submitButton.disabled = false;
         }
     });
 

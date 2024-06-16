@@ -71,6 +71,10 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Disable the submit button
+        submitButton.disabled = true;
+
         const usernameInput = form.querySelector('#register-username') as HTMLInputElement;
         const mobileInput = form.querySelector('#register-mobile') as HTMLInputElement;
         const emailInput = form.querySelector('#register-email') as HTMLInputElement;
@@ -84,6 +88,7 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
         // Basic client-side validation
         if (!username || !mobile || !email || !password) {
             alert('Please fill in all fields.');
+            submitButton.disabled = false; // Re-enable the submit button if validation fails
             return;
         }
 
@@ -151,6 +156,8 @@ export function createRegisterPage({ title, colSizes }: RegisterPageOptions): HT
                 title: 'Error!',
                 text: `Error registering user: ${error.message}`,
             });
+            // Re-enable the submit button if there's an error
+            submitButton.disabled = false;
         }
     });
 
