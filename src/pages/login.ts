@@ -41,20 +41,13 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
     form.appendChild(createFormField('login-email', 'Email', 'email'));
     form.appendChild(createFormField('login-password', 'Password', 'password'));
 
-    const submitButton = createSubmitButton();
+    const submitButton = createSubmitButton('login');
     form.appendChild(submitButton);
 
     // Create the recaptcha-container dynamically
     const recaptchaContainer = document.createElement('div');
     recaptchaContainer.id = 'recaptcha-container';
     document.body.appendChild(recaptchaContainer); // Ensure it is appended to the body
-
-
-
-
-    
-
-    
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -71,27 +64,14 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
                 throw new Error('reCAPTCHA container not found');
             }
             
-
-            console.log(recaptchaElement)
-
             const recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaElement, {
                 size: 'invisible',
                 callback: (response: any) => {
-                  console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+                  console.log('reCAPTCHA solved, allow signInWithPhoneNumber.', response);
                 }
             });
 
-            console.log(recaptchaVerifier)
-            console.log('recapture')
-
-
             await recaptchaVerifier.render();
-
-            console.log(userCredential?.user)
-
-
-
-            // I think when a user is been registered we need to register the phone number as well.
             
             const phoneNumber = userCredential.user.phoneNumber;
             if (!phoneNumber) {
@@ -105,7 +85,17 @@ export function createLoginPage({ title, colSizes }: LoginPageOptions): HTMLDivE
                 title: 'Enter SMS Code',
                 input: 'text',
                 inputLabel: 'SMS Code',
-                inputPlaceholder: 'Enter the SMS code you received'
+                inputPlaceholder: 'Enter the SMS code you received',
+                customClass: {
+                    popup: 'sms-popup',
+                    input: 'sms-input'
+                },
+                background: 'rgba(0, 0, 0, 0.8)',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to enter the SMS code!';
+                    }
+                }
             });
 
             if (smsCode) {

@@ -66,3 +66,14 @@ body {
     font-size: 50px; /* Further adjust font size for even smaller screens */
   }
 }
+
+/* --- Phone number verification custom css --- */
+.sms-popup {
+  padding: 20px !important; /* Inner padding */
+  width: 400px !important; /* Reduced width */
+  background: rgba(255, 255, 255, 0.9) !important; /* Slight transparent background */
+}
+
+.sms-input {
+  padding: 10px 0 0 !important; /* Inner padding for input */
+}
