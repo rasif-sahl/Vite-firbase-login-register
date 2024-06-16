@@ -1,11 +1,13 @@
 import { createNavBar } from '../components/navBar';
 import { protectRoute } from '../router';
+import { auth } from '../firebase';
+import { getUserData } from '../services/userService'; // Adjust the import path according to your project structure
 
-export function createDashboardPage(): HTMLDivElement {
+export async function createDashboardPage(): Promise<HTMLDivElement> {
     const container = document.createElement('div');
     container.id = 'dashboard-container';
 
-    protectRoute(() => {
+    await protectRoute(async () => {
         const navBar = createNavBar();
         container.appendChild(navBar);
 
@@ -14,10 +16,31 @@ export function createDashboardPage(): HTMLDivElement {
 
         const content = document.createElement('div');
         content.classList.add('content');
-        content.innerHTML = `
-            <h2>Welcome to the Dashboard</h2>
-            <p>This page is only accessible to authenticated users.</p>
-        `;
+
+        const user = auth.currentUser;
+        if (user) {
+            try {
+                const userData = await getUserData(user.uid);
+                const userName = userData?.username;
+
+                content.innerHTML = `
+                    <h2>Welcome to the Dashboard, ${userName}</h2>
+                    <p>This page is only accessible to authenticated users.</p>
+                `;
+            } catch (error) {
+                content.innerHTML = `
+                    <h2>Welcome to the Dashboard</h2>
+                    <p>This page is only accessible to authenticated users.</p>
+                    <p>Unable to fetch user information.</p>
+                `;
+            }
+        } else {
+            content.innerHTML = `
+                <h2>Welcome to the Dashboard</h2>
+                <p>This page is only accessible to authenticated users.</p>
+                <p>No authenticated user found.</p>
+            `;
+        }
 
         contentContainer.appendChild(content);
         container.appendChild(contentContainer);
