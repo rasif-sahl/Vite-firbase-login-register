@@ -10,7 +10,7 @@ export function createNavBar(): HTMLDivElement {
     const brandLogo = document.createElement('a');
     brandLogo.href = '#';
     brandLogo.classList.add('brand-logo', 'logo-custom');
-    brandLogo.textContent = 'onUgo';
+    brandLogo.textContent = 'FireAuth';
 
     const logoutButton = document.createElement('a');
     logoutButton.href = '#';
